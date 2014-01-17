@@ -76,7 +76,7 @@ describe "Associatable" do
       my_attr_accessible :id, :name, :owner_id
       my_attr_accessor :id, :name, :owner_id
 
-      belongs_to :human, :foreign_key => :owner_id
+      self.belongs_to :human, :foreign_key => :owner_id
     end
 
     class Human < SQLObject

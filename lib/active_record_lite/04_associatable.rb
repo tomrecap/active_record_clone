@@ -24,6 +24,8 @@ class AssocOptions
 end
 
 class BelongsToOptions < AssocOptions
+  attr_reader :name, :class_name, :foreign_key, :primary_key
+
   def initialize(name, options = {})
     @name = name
     @class_name =   options[:class_name] ||
@@ -36,6 +38,8 @@ class BelongsToOptions < AssocOptions
 end
 
 class HasManyOptions < AssocOptions
+  attr_accessor :name, :class_name, :foreign_key, :primary_key
+
   def initialize(name, self_class_name, options = {})
     @name = name
     @class_name =   options[:class_name] ||
@@ -50,12 +54,33 @@ end
 module Associatable
   # Phase IVb
   def belongs_to(name, options = {})
-    # options = BelongsToOptions.new(name, options)
-    # define_method(options.name)
+    options = BelongsToOptions.new(name, options)
+    foreign_key_name = options.send(:foreign_key)
+
+    define_method(options.send(:name)) do
+      options.model_class
+        .where(:id => self.send(foreign_key_name))
+        .first
+    end
+
   end
 
   def has_many(name, options = {})
-    # ...
+    options = HasManyOptions.new(name, name.constantize.to_s, options)
+    foreign_key_name = options.send(:foreign_key)
+
+    define_method(options.send(:name)) do
+      options.model_class
+        .where(:id => self.send(foreign_key_name))
+      end
+
+
+    # class House < SQLObject
+    #   my_attr_accessible :id, :address, :house_id
+    #   my_attr_accessor :id, :address, :house_id
+    #
+    #   has_many :humans
+    # end
   end
 
   def assoc_options
@@ -65,4 +90,5 @@ end
 
 class SQLObject
   # Mixin Associatable here...
+  extend Associatable
 end
