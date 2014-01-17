@@ -56,35 +56,33 @@ module Associatable
   def belongs_to(name, options = {})
     options = BelongsToOptions.new(name, options)
     foreign_key_name = options.send(:foreign_key)
+    primary_key_name = options.send(:primary_key)
+
+    self.assoc_options[name] = options
 
     define_method(options.send(:name)) do
-      options.model_class
-        .where(:id => self.send(foreign_key_name))
+      options
+        .model_class
+        .where(primary_key_name => self.send(foreign_key_name))
         .first
     end
-
   end
 
   def has_many(name, options = {})
-    options = HasManyOptions.new(name, name.constantize.to_s, options)
+    options = HasManyOptions.new(name, self.to_s.singularize.camelize, options)
     foreign_key_name = options.send(:foreign_key)
+    primary_key_name = options.send(:primary_key)
 
     define_method(options.send(:name)) do
-      options.model_class
-        .where(:id => self.send(foreign_key_name))
+      options
+        .model_class
+        .where(foreign_key_name => self.send(primary_key_name))
       end
-
-
-    # class House < SQLObject
-    #   my_attr_accessible :id, :address, :house_id
-    #   my_attr_accessor :id, :address, :house_id
-    #
-    #   has_many :humans
-    # end
   end
 
   def assoc_options
     # Wait to implement this in Phase V. Modify `belongs_to`, too.
+    @assoc_options ||= {}
   end
 end
 
