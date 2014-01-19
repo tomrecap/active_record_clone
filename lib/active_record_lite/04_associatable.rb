@@ -7,6 +7,7 @@ class AssocOptions
     :foreign_key,
     :class_name,
     :primary_key,
+    :assoc_options
   )
 
 
