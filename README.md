@@ -1,3 +1,1 @@
-After the project, you can review the solution here:
-
-* https://github.com/appacademy-solutions/active_record_lite/tree/solution
+Clone of ActiveRecord's ORM features. Uses metaprogramming to reproduce the database interface provided by ActiveRecord.
